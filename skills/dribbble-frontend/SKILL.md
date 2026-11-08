@@ -5,7 +5,7 @@ description: Nick's private Dribbble reference workflow for frontend work. Use i
 
 # Dribbble frontend
 
-A private library of full-res Dribbble shots (440 web and 230 mobile, all 1800x1350, in 29 categories) sets the visual
+A private library of full-res Dribbble shots (740 web and 430 mobile, all 1800x1350, in 36 categories) sets the visual
 bar before you write UI code. Every image is another designer's work: internal reference only (see Rules).
 
 - Library root: `$DRIBBBLE_LIB` (default `/Volumes/Extreme SSD/Projects/grokbot/design-references/`). The images are
