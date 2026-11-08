@@ -94,6 +94,18 @@ for screenshots and recordings; Python 3 with Pillow for the gallery and contact
 - **Grok generates; Claude judges.** Grok invented competitors, misstated APIs and renamed our own products as
   "new" ideas. Verify every claim before it reaches the human.
 
+## Standalone skill repos
+
+Some skills are also published on their own, from this repo (edit them here, then publish):
+
+| Skill | Standalone repo |
+|---|---|
+| dribbble-frontend | [nickthelegend/dribbble-frontend](https://github.com/nickthelegend/dribbble-frontend) |
+
+```bash
+scripts/publish-skill.sh dribbble-frontend https://github.com/nickthelegend/dribbble-frontend.git
+```
+
 ## License
 
 MIT © 2026 Nivesh Gajengi

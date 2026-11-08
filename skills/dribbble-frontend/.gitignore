@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+.DS_Store
+# generated per library; lists other designers' shot titles
+references/categories.md
