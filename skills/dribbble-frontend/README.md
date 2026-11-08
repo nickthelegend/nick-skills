@@ -43,8 +43,9 @@ spatial, workflow tools and AI memory. They are defined in `CATS` and `TERM_CATS
 
 ## The library is yours, and it stays private
 
-This repo ships **no images**. Shots on Dribbble belong to their designers, so keep your library on your own disk
-or in a private repo, and never ship or publish it.
+The public copy of this skill (in [nick-skills](https://github.com/nickthelegend/nick-skills)) ships **no images**.
+Shots on Dribbble belong to their designers, so keep your library on your own disk or in a private repo, and never
+ship or publish it. Nick's own copy of this repo is private and carries his library in `library/`.
 
 Settings:
 - `DRIBBBLE_LIB`: the library root. It holds `web-shots/` and `mobile-shots/`, each with an
