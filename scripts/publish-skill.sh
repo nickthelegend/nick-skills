@@ -10,4 +10,5 @@ cd "$(git rev-parse --show-toplevel)"
 git diff --quiet HEAD -- "skills/$name" || { echo "skills/$name has uncommitted changes; commit first" >&2; exit 1; }
 sha=$(git subtree split --prefix="skills/$name")
 echo "skills/$name -> $sha"
+if [ "$(git ls-remote "$remote" refs/heads/main | cut -f1)" = "$sha" ]; then echo "already up to date"; exit 0; fi
 git push "$remote" "$sha:refs/heads/main"   # no --force: a non-fast-forward is refused
