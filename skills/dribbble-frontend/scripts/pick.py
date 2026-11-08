@@ -29,7 +29,7 @@ Library images are other designers' work: internal reference only. Never copy th
 import argparse, datetime, math, os, random, re, shutil, subprocess, sys
 
 LIB = os.environ.get('DRIBBBLE_LIB', '/Volumes/Extreme SSD/Projects/grokbot/design-references')
-BRANDS = os.environ.get('DRIBBBLE_BRANDS', os.path.join(os.path.dirname(LIB), 'BRANDS.md'))
+BRANDS = os.environ.get('DRIBBBLE_BRANDS') or os.environ.get('BRANDS_FILE') or os.path.join(os.path.dirname(LIB), 'BRANDS.md')
 SKILL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SHEETS = os.path.join(os.environ.get('TMPDIR') or '/Volumes/Extreme SSD/tmp-render', 'dribbble-sheets')
 

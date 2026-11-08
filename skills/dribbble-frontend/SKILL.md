@@ -108,26 +108,21 @@ Record the result under `### QA (<date>)` in `picks/<slug>.md` (pass, or what wa
   library (`design-references/`); never make that repo public.
 - Point at the library by absolute path. Never copy images into a project. Contact sheets go to `$TMPDIR/dribbble-sheets/`
   (outside every repo).
-- To fetch more shots use `scripts/fetch-shots.mjs` (the same file lives in `design-references/tools/`) (web or mobile, de-duplicated, exact 1800x1350 only;
+- To fetch more shots use `design-references/tools/fetch-shots.mjs` from the private library (web or mobile, de-duplicated, exact 1800x1350 only;
   never bypass a bot check, login wall or CAPTCHA), add the new search terms to `TERM_CATS` in `pick.py`, then run
   `pick.py write-categories`.
 
 ## Build your own library (new machine or new user)
-The public skill repo ships the picker, the category map and the fetcher, but no images. To build a library:
+This public repo ships the picker, the category rules (`CATS` and `TERM_CATS` in `pick.py`) and the workflow, but no
+images and no scraper. Nick's library and its fetcher (`tools/fetch-shots.mjs`) live in his **private** backup repo.
 
-```bash
-mkdir -p ~/design-references/web-shots ~/design-references/mobile-shots
-printf '# Web shots\n\n| File | Search | Shot | Author |\n|---|---|---|---|\n' > ~/design-references/web-shots/INDEX.md
-printf '# Mobile shots\n\n| File | Search | Shot | Author |\n|---|---|---|---|\n' > ~/design-references/mobile-shots/INDEX.md
-export DRIBBBLE_LIB=~/design-references PLAYWRIGHT_FROM=/path/to/a/project/with/playwright/package.json
-node scripts/fetch-shots.mjs web 10 "crypto landing page" "defi dashboard" -- "fintech landing page"
-node scripts/fetch-shots.mjs mobile 10 "crypto wallet app" "payment app" -- "banking app"
-python3 scripts/pick.py write-categories
-```
+To start your own library:
+- Save shots you have the right to use as reference, as 1800x1350 JPEGs, into `$DRIBBBLE_LIB/web-shots/` and
+  `$DRIBBBLE_LIB/mobile-shots/`.
+- Give each folder an `INDEX.md` table: `| File | Search | Shot | Author |`, with the shot's link and its author.
+- Map each search term to categories in `TERM_CATS`, then run `python3 scripts/pick.py write-categories`.
 
-The fetcher:
-- opens public Dribbble search pages in headless Chromium at polite speed and skips ads and boosted slots;
-- keeps only originals the CDN returns at exactly 1800x1350, and skips any search that hits a bot check.
+Keep the library on your own disk, or in a private repo, never a public one. The images belong to their designers.
 
-Add each new search term to `TERM_CATS` in `pick.py` so it lands in the right categories. Keep the library on your
-own disk, or in a **private** backup repo, never a public one.
+Settings: `DRIBBBLE_LIB` (library root) and `DRIBBBLE_BRANDS` or `BRANDS_FILE` (the brands table that `pick.py check`
+compares against).
