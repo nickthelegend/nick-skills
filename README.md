@@ -100,7 +100,7 @@ Some skills are also published on their own, from this repo (edit them here, the
 
 | Skill | Standalone repo |
 |---|---|
-| dribbble-frontend | [nickthelegend/dribbble-frontend](https://github.com/nickthelegend/dribbble-frontend) |
+| dribbble-frontend | [nickthelegend/dribbble-frontend](https://github.com/nickthelegend/dribbble-frontend) (private: the skill plus Nick's reference library in `library/`) |
 
 ```bash
 scripts/publish-skill.sh dribbble-frontend https://github.com/nickthelegend/dribbble-frontend.git
