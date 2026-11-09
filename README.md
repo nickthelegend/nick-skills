@@ -17,7 +17,7 @@ hackathon entries judged, polished and filmed in one day, with the human approvi
 
 | Skill | Use it for |
 |---|---|
-| [orchestrate](skills/orchestrate/SKILL.md) | One command for a whole entry. Keeps `STATE.md` so any session can resume; Codex workers write code ([scripts/codex-run.sh](skills/orchestrate/scripts/codex-run.sh), five-minute [check-workers.sh](skills/orchestrate/scripts/check-workers.sh)); stops only at the human's gates (pick, keys/money, film notes, submit). |
+| [orchestrate](skills/orchestrate/SKILL.md) | One command for a whole entry, on autopilot. [orch.py](skills/orchestrate/scripts/orch.py) holds the task graph for every phase and renders `STATE.md`. A Stop hook ([install-hooks.sh](skills/orchestrate/scripts/install-hooks.sh)) blocks the session from ending its turn while any task is runnable. Codex workers ([codex-run.sh](skills/orchestrate/scripts/codex-run.sh)) run under `run_in_background`, so their exit wakes the session for review. It pauses only for steps the human must do: money, going public, submitting. |
 | [grok-ideation](skills/grok-ideation/SKILL.md) | Ideas in five rounds: fan-out across lenses, kill pass, sharpen, re-judge, pick. Grok never gives the final score. |
 | [idea-judge](skills/idea-judge/SKILL.md) | Five-round honest judge: rubric and gates, prior-art kill check, evidence per criterion, improve the weakest, re-judge. |
 | [dribbble-frontend](skills/dribbble-frontend/SKILL.md) | Seeded random picks from your own private reference library (`DRIBBBLE_LIB`), notes on what to take, distinct look per product. Library images are never shipped. |
@@ -65,7 +65,7 @@ git clone https://github.com/nickthelegend/nick-skills
 for s in nick-skills/skills/*/; do ln -sfn "$PWD/$s" ~/.claude/skills/$(basename "$s"); done
 ```
 
-Then, in Claude Code: `/orchestrate <event url>`, or any single skill (`/grok-ideation`, `/judge-skill`, ...).
+Then run `skills/orchestrate/scripts/install-hooks.sh` once (it's a no-op without an active run), and in Claude Code: `/orchestrate <event url>`, or any single skill (`/grok-ideation`, `/judge-skill`, ...).
 For `/dribbble-frontend`, set `DRIBBBLE_LIB` to your own reference folder and run
 `python3 ~/.claude/skills/dribbble-frontend/scripts/pick.py write-categories` once.
 

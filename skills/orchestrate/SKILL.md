@@ -1,126 +1,106 @@
 ---
 name: orchestrate
-description: Run a whole hackathon entry end to end as an agentic harness. Steps: read the event; sweep for credentials on day one; ideate with /grok-ideation; judge with /idea-judge; hand coding to Codex workers; build the UI with /dribbble-frontend; generate art with /chatgpt-assets and clips with /gemini-video; judge, polish and film with /judge-skill; package the submission. State lives in a file so any session can resume. Use it when someone says "do it all", "run the pipeline", names a hackathon and wants an entry, or types /orchestrate.
+description: Run a whole hackathon entry end to end, on autopilot, without stopping. A task graph (orch.py) covers every phase (event rules, credential sweep, /grok-ideation, /idea-judge, spec, Codex build workers, /dribbble-frontend UI, /chatgpt-assets art, /gemini-video clip, live proof, /idea-judge on the build, /judge-skill gallery and walkthrough, the film, the submission pack), and a Stop hook refuses to let the session end its turn while any task is runnable. It stops only for steps only the human can do, and keeps working on everything else meanwhile. Use it when someone says "do it all", "end to end", "run the pipeline", names a hackathon and wants entries, or types /orchestrate.
 ---
 
 # /orchestrate
 
-You are the conductor. The workers do the heavy lifting:
+You are the conductor of a run that **does not stop**. The work is split up:
 - **Codex** writes code.
-- **You** do the design, film, copy and review.
+- **You** do design, film, copy and review.
 - **Grok** scouts ideas.
 - **ChatGPT and Gemini** make art.
 
-Your job:
-- keep `STATE.md` true;
-- launch and check workers;
-- review every diff;
-- deliver results the moment they land;
-- stop only at the gates that belong to the human.
+The run is a task graph in `orch.py`. A Stop hook holds you to it.
+
+Why it's built this way: the old version ended its turn at every milestone ("Say go and I'll start…",
+a status report, "want me to…?"). It also launched Codex detached, so nothing woke it when the
+workers finished. The human came back hours later to "why u stopped". Both holes are closed now:
+- **The Stop guard** blocks the end of the turn while a task is runnable, and tells you the next task.
+- **Workers run under Bash `run_in_background: true`**, so the harness wakes you when each one exits.
+  The guard then makes you review the result.
 
 ```
- phase 0  intake           event page -> RULES.md, credential sweep (ask the human for keys NOW)
- phase 1  ideate           /grok-ideation rounds + lenses -> IDEAS.md (verified)
- phase 2  judge ideas      /idea-judge 5 rounds -> pick           [GATE: human picks, unless "no stops"]
- phase 3  build            spec -> Codex briefs -> workers -> review -> commit -> push
- phase 4  look             /dribbble-frontend (you, never Codex) + /chatgpt-assets + /gemini-video
- phase 5  prove live       testnet/mainnet runs, real tx links, TESTING.md counts   [GATE: keys/money]
- phase 6  judge + film     /judge-skill rounds 0-3 -> the ~3 min film           [GATE: human notes]
- phase 7  submit pack      SUBMISSION.md, README, repo public, post text        [GATE: human submits]
+O="python3 $HOME/.claude/skills/orchestrate/scripts/orch.py"   # (zsh: use a function, not "$O")
 ```
 
-## Phase 0: intake (never skip; this is where we kept losing)
-1. Read the event page live in a browser. Pages are often JS-rendered and dates move. Fill
-   [templates/RULES.md](templates/RULES.md) with:
-   - the deadline in UTC **and** the user's time zone;
-   - the rubric with its weights;
-   - the must-haves;
-   - entries per team;
-   - prize amounts copied exactly (never guess);
-   - bans (names, logos, countries);
-   - "built in window" rules.
-2. **Credential sweep, the same hour.** List every account, API key, funded wallet, faucet, sign-in and
-   public-repo approval the entry will need before it can run live. Send that list to the human
-   immediately, as one short checklist with links.
-   - Our losing streak came from entries stuck at "BLOCKED: needs a key" or "never submitted", not from weak
-     ideas.
-   - Keys go in gitignored `.env` files by variable name. Never print, copy or open them.
-3. Create [templates/STATE.md](templates/STATE.md) in the work folder. Update it at every phase change. A new session resumes by reading `STATE.md` first.
+## Step 0: arm it (first time on a machine, then every run)
+1. Run `scripts/install-hooks.sh` once per machine. It is idempotent, and it's a no-op for sessions without a run.
+2. **New run:**
+   ```
+   orch.py init --work <grokbot>/runs/<event-slug> --event "<name>" --url <event page> --deadline <UTC> [--products a,b,c]
+   ```
+   - Name the products if the human already chose them; ideation is then skipped.
+   - Otherwise ideation runs first and you add products after the pick with `orch.py add-product a,b`.
+   - **Continuing a run in a new session:** `orch.py resume --work <dir>`, then read `<dir>/STATE.md`.
+3. `init` and `resume` bind **this** session to the run. From then on, ending the turn while tasks are
+   runnable gets blocked, with the next task in the message. That's intended. Keep going.
 
-## Phase 1–2: ideas
-- Run **/grok-ideation**, then **/idea-judge**. Present the top 3 with honest before → after scores, and recommend one.
-- **Gate:** the human picks, unless they said "no stops" (then take your recommendation and say so).
-- If they reject the batch, change the lens, not the wording.
-- Respect the standing constraints:
-  - one chain per project;
-  - no re-skins of past builds;
-  - a product that won on one chain stays there;
-  - several products in one event must not look like one team made them.
+## The loop (this is the whole skill)
+```
+while true:
+  orch.py next --all                 # NEXT task, its skill, its done-criteria; plus what's parallel
+  orch.py start <id>
+  do it (with the named skill; parallel independent tasks via subagents or Codex workers)
+  orch.py done <id> --evidence "<commit / URL / path / test line>"
+     or orch.py block <id> --needs "<exact credential or decision>" --who human   -> PushNotification it
+     or orch.py skip <id> --why "<reason>"
+```
+- **Never end the turn while `next` prints `NEXT:` or `REVIEW:`.**
+- **`WAIT:`** (only background workers are running): you may end the turn. Their exit wakes you.
+- **`HUMAN:`** (only human steps are left): make sure every ask was sent, report in five lines, and end.
+- **`DONE:`**: run `orch.py finish` and send the deliverables.
+- **Evidence is required.** "done" without a commit, URL, path or command output isn't done.
+- `orch.py status` re-renders `STATE.md`. Show it to the human at phase changes, not every task.
 
-## Phase 3: build with Codex workers
-1. Write `specs/<slug>.md` with:
-   - the one-line pitch;
-   - the demo beat sheet;
-   - the architecture;
-   - the gates (what must be live).
-2. Split coding into worker briefs from [templates/codex-brief.md](templates/codex-brief.md). Each brief carries the
-   hard rules: no push, no secrets, no mainnet, no mocks of external APIs, fail loudly with "Setup required",
-   kill processes by PID, its own ports, and "don't restyle the UI".
-3. Launch with [scripts/codex-run.sh](scripts/codex-run.sh) `<repo> <brief.md>`. It runs in the background,
-   logs to `<work>/codex/logs/`, and uses `-m gpt-6-sol`.
-   - Run at most 2–3 heavy workers at once on a 16 GB laptop.
-   - Codex may refuse security-flavoured work (attack tests); do those yourself.
-4. **Five-minute check:** `scripts/check-workers.sh <repo>…` shows changed-file counts and the last log lines.
-   A worker with no changes at five minutes is stuck. Kill it and re-brief it.
-5. **Review before every commit:**
-   - deleted or weakened tests (`git diff --diff-filter=D --name-only`);
-   - gutted `.env.example` or docs;
-   - staged secrets;
-   - fake data.
-   Then commit with a message that describes only that diff, and push right away if the repo has a remote
-   (a laptop shutdown once cost work). Don't ask again; the human approved pushing for their own repos.
-6. Give every product a brandable name (Japanese, Greek or Korean; never descriptive) and an MIT license under the
-   human's name.
+## Autopilot rules (default mode)
+1. **No permission questions.** No "should I continue", "say go", "want me to", or "which one?" when you have
+   a recommendation. Pick it, `orch.py decide "<what and why>"`, tell the human in one line, keep going.
+   They redirect you if they disagree.
+2. **A missing key blocks one task, never the run.**
+   - `block` it, PushNotification the exact ask (what, where to get it, which `.env` variable), and move on.
+   - Soft dependencies (`~id`) route around a blocked task. Film on a local fork or testnet when mainnet keys
+     are missing, label it honestly, and re-shoot when the key lands.
+3. **The only real gates** are steps only the human can do:
+   - real money or a mainnet spend (ask once, with an amount);
+   - making a repo public, if it wasn't pre-approved;
+   - submitting the form, signing in, or posting.
+   Everything else you do yourself.
+4. **Parallel by default.** `next --all` lists every runnable task.
+   - Independent tasks go to subagents (research, QA) or Codex workers (code).
+   - At most 2–3 heavy workers on a 16 GB laptop.
+   - Design, art direction, film and review stay with you.
+5. **The human said stop** → `orch.py pause` (the guard goes off). "Carry on" → `orch.py unpause`.
+6. **Stalls:** the guard lets you stop after 3 turn-ends in a row that didn't change the task graph. If you are
+   truly stuck, `block` the task with what's needed rather than looping.
 
-## Phase 4: make it look like a real product
-- Build the UI yourself with **/dribbble-frontend**: references picked at random, its own archetype, fonts
-  and palette, QA at 375 px and 1440 px, and only live data, empty states or "Setup required".
-- Generate the art with **/chatgpt-assets**, plus one **/gemini-video** clip if the landing earns it. Credit both tools.
-- Agents are chat-driven: a real tool-calling model with visible tool calls and guardrails that refuse on
-  camera, never a "do the thing" button.
+## What each phase means (the graph already holds these tasks)
+| Phase | Tasks | Use |
+|---|---|---|
+| 0 intake | `rules`, `creds` | Read the event page live → `RULES.md` (deadline UTC + IST, rubric weights, must-haves, entries/team, prizes copied, bans). Credential sweep → `CREDENTIALS.md` + one PushNotification checklist **in the first hour**. Losing streaks came from "BLOCKED: needs a key" found on deadline day. |
+| 1–2 ideas | `ideate`, `pick` | `/grok-ideation`, then `/idea-judge` (you judge, never Grok). Autopilot takes the top pick. If the human rejects the batch, change the lens, not the wording. |
+| 3 build | `spec`, `repo`, `brief`, `code`, `review` | Write `specs/<slug>.md`; set up a monorepo with MIT (Copyright (c) 2026 Nivesh Gajengi) and a private remote; write briefs from `templates/codex-brief.md`; run `ORCH_TASK=<id> scripts/codex-run.sh <repo> <brief>` **with `run_in_background: true`**. Review before every commit: deleted or weakened tests, gutted docs, staged secrets, fake data. Commit each diff and push straight away. |
+| 4 look | `ui`, `art`, `clip`, `qa` | `/dribbble-frontend` (you, never Codex), `/chatgpt-assets`, `/gemini-video`. QA at 375 and 1440 px. Live data, empty states, or "Setup required" only. |
+| 5 live | `live`, `testing` | Real transactions with explorer links in the README; `TESTING.md` from real runs. Mainnet spend is a `block` for the human's yes. |
+| 6 judge + film | `judge`, `gallery`, `walk`, `film` | `/idea-judge` on the running build, then fix the weakest criterion. `/judge-skill` gallery and raw walkthrough. Cut a ~3-minute film with `/hyperframes`: problem first, then live demos only, full-width app screens, captions, speed badges. Never edit real output; redact with a visible box. |
+| 7 submit | `pack`, `public`, `submit` | `HACKATHON_SUBMISSION_FORM.md`, README, post text. Run a secret scan, then make the repo public. `submit` is the human's: send a 3-line checklist with links and the deadline in IST. |
 
-## Phase 5: prove it live
-- Deploy where the rules demand it. Prefer local chains for development, then the required network for the proof.
-- **Gate:** real money or mainnet spend needs the human's explicit yes, with an amount.
-- Record every transaction hash with an explorer link in the README's deployment table.
-- Write `TESTING.md` from real runs: counts, dates, what's skipped and why.
-- Anything still impossible becomes `BLOCKED.md`, naming the exact credential or action needed and who must do it.
+Add any extra work with `orch.py add --product <p> --phase <n> --title "..." --after <id>`. That covers judge
+fixes, a second chain check, or a re-shoot when a key lands.
 
-## Phase 6: judge and film
-Run **/judge-skill**:
-- Round 0: non-UI fixes.
-- Round 1: UI gallery.
-- Round 2: a raw walkthrough of the live product.
-- Round 3: the cut, using the human's notes.
+## Standing constraints (every product)
+- One chain per project.
+- No re-skins of past builds.
+- A product that won on one chain stays there.
+- Several products in one event must not look like one team made them.
+- Brandable names (Japanese, Greek or Korean).
+- No mocks of external APIs.
+- Fail loudly ("Setup required").
+- Never print or open secrets.
+- Never force-push.
+- Never delete a submitted video; upload a new version of the same file.
 
-The film's format:
-- the problem in plain words first (20–40 s), then only live demos, strongest first;
-- full-width app screens;
-- one-line captions;
-- speed badges on sped-up footage;
-- explorer proof for anything on chain.
-
-Never edit a program's real output; redact with a visible box.
-
-## Phase 7: submit pack
-- `HACKATHON_SUBMISSION_FORM.md`: every field the form asks, filled from facts.
-- README: what it is, try-it steps, the live deployment table, AI and library disclosure, a link to the film.
-- Run a secret scan, then make the repo public. Some events need a topic or an invited judge account.
-- Write the post text for X or LinkedIn if the event rewards it.
-- **Gate:** the human submits, signs in and posts. Hand them a 3-line checklist with links and the deadline in their time zone.
-- After submitting: never delete a submitted video. Upload a new version of the same file so the link stays.
-
-## Delivery rules
-- Deliver each result as it lands (a gallery link, a film, a live URL), not in one batch at the end.
-- Report in plain words: what's done, what's live (with links), what only the human can do, and by when.
-- Give honest pushback. If an entry won't be live by the deadline, say so early and propose the cut that makes it live.
+## Delivery
+- Send each result the moment it lands with SendUserFile: a gallery link, a film, a live URL.
+- Reports are plain words: what's done, what's live (with links), what only the human can do, and by when.
+- Push back honestly. If an entry won't be live by the deadline, say so early and `add` the cut that makes it live.
