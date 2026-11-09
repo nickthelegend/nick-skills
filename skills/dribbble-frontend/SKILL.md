@@ -1,6 +1,6 @@
 ---
 name: dribbble-frontend
-description: Nick's private Dribbble reference workflow for frontend work. Use it whenever you design, build, restyle or polish a web or app UI, including landing pages, marketing sites, dashboards, admin panels, trading terminals, launchpads, games, comic or creator sites, dev-tool or docs sites, wallets, payment apps, mobile screens, onboarding flows or any frontend component. Before you write UI code, pick fitting Dribbble shots from the local reference library at random (seeded), study the full-res images, write down concrete takes from each, check the planned fonts, palette and archetype against other products, then build and QA side by side with the references. Keep every product visually distinct and show only real data.
+description: Nick's private Dribbble reference workflow for frontend work. Use it whenever you design, build, restyle or polish a web or app UI, including landing pages, marketing sites, dashboards, admin panels, trading terminals, launchpads, games, comic or creator sites, dev-tool or docs sites, wallets, payment apps, mobile screens, onboarding flows or any frontend component. Before you write UI code, capture the real category leader's screens (Kickstarter, Ribbon, OpenRouter, Hyperliquid…) for the layout, then pick fitting Dribbble shots from the local reference library at random (seeded), study the full-res images, write down concrete takes from each, check the planned fonts, palette and archetype against other products, then build the leader's structure with the Dribbble finish and QA side by side with both. Keep every product visually distinct and show only real data.
 ---
 
 # Dribbble frontend
@@ -26,11 +26,52 @@ bar before you write UI code. Every image is another designer's work: internal r
 | `pick.py lint SLUG` | lists unfilled `__` takes fields and a missing QA record |
 | `pick.py write-categories` | regenerates the category map after the library grows |
 
+## Two reference sources, both mandatory
+Nick's rule (Nov 2026, after a round of invented layouts that wasted a day):
+
+| Source | Gives you | Never take from it |
+|---|---|---|
+| **The real category leader:** the shipped, successful Web2/Web3 product people already use for this job | **Layout and information architecture:** page list, nav, where the primary action sits, table columns, the order of a detail page | its logo, name, brand colour, copy, imagery |
+| **The Dribbble library** (this skill) | **Theme and finish:** palette, type scale, spacing, card and table finish, motion, mobile treatment | artwork, renders, photos, text |
+
+- **Don't invent experimental layouts.** Judges and users read a familiar structure instantly; novel metaphors such as
+  "orders as hanging paper slips" cost time and score worse. Be creative in finish and art, not in information
+  architecture.
+- **"Make it like X" means X's vibe and polish, not X's layout.** When Nick points at one of our own apps as the bar,
+  match its quality but keep each product's own leader-based layout and brand. Never clone one of our apps onto
+  another; side by side, no two products may look alike.
+- **Never replace a design Nick has said he likes** (for example Juno, Kotoba, Kumi's plum crew room). Polish within it;
+  if a restyle is rejected, revert it (`git revert`, not a rewrite) and keep only the real fixes.
+
+Example leaders:
+
+| Product | Category leader(s) |
+|---|---|
+| crowdfund | Kickstarter |
+| covered-call vault | Ribbon / Aevo |
+| BTC staking dashboard | Lombard, Babylon |
+| AI capacity or model market | OpenRouter, Vast.ai, RunPod |
+| trading or dark pool | Hyperliquid, Binance, Drift, Renegade |
+| prediction market | Polymarket, tab.markets |
+| launchpad | pump.fun |
+| social or chat fund | Telegram-style crew room |
+| payments | Stripe Checkout |
+
 ## Workflow
 
-### 1. Name the category
+### 1. Name the category and capture the real leader
 Run `pick.py categories` and skim the category map. Name the product in plain words, for example "perps trading
 terminal", "memecoin launchpad", "comic reader", "p2p payment app", "dev tool docs" or "auction marketplace".
+
+Name its category leader(s), then capture their real screens before you design: the landing, the main app view, a
+detail page and the phone view.
+- Use a headless browser screenshot (playwright `channel: 'chrome'`, 1440 and 390 wide), or the user's browser.
+- Save them outside every repo, under `$TMPDIR/leader-refs/<slug>/`, as internal reference only.
+- Never log in, solve a CAPTCHA or bypass a bot wall to get them.
+- Write 5–8 lines in `picks/<slug>.md` under `### Leader layout`: the routes, the nav, where the primary action sits, the
+  table or card anatomy, and what the detail page shows in which order.
+
+This structure is the skeleton you build. The Dribbble picks below dress it.
 
 ### 2. Pick at random among fitting references
 ```bash
@@ -66,8 +107,9 @@ Turn the agreed numbers into the product's tokens (CSS variables). `pick.py lint
 Keep this log in the library (it is private), never in a project repo.
 
 ### 5. Plan a distinct look and check it
-Each product gets its own layout archetype, palette, sans + mono pairing and component shape language; a font appears
-in exactly one product (`/Volumes/Extreme SSD/Projects/grokbot/BRANDS.md`). Before building, run
+Each product gets its own brand: palette, sans + mono pairing, art and component shape language. Its layout follows its
+category leader (step 1), so two products share a layout only when they share a category. A font appears in exactly
+one product (`/Volumes/Extreme SSD/Projects/grokbot/BRANDS.md`). Before building, run
 ```bash
 python3 ~/.claude/skills/dribbble-frontend/scripts/pick.py check --slug <slug> --font "<Sans>" --font "<Mono>" \
   --palette "#bg,#ink,#accent" --archetype "<metaphor in a few words>" --log
@@ -77,7 +119,8 @@ they read differently in context. Restyling an existing brand: pass `--brand <Na
 Nick prefers Polaris-grade UI that is different for each product; never Inter Tight, no glassmorphism by default.
 
 ### 6. Build to that bar
-- Match the references' structure, spacing discipline, hierarchy and finish, at the same level of polish.
+- Build the leader's structure (step 1) with the Dribbble references' spacing discipline, hierarchy and finish, at the
+  same level of polish.
 - Never copy their artwork, illustrations, 3D renders, photos, logos, brand names or text. Make your own (CSS, SVG,
   generated shapes, real product screenshots) and write your own copy for the actual product.
 - Never embed, hotlink or ship the library images, and never copy them into any repository.
@@ -89,7 +132,9 @@ product, or an honest empty, loading, error or "Setup required" state. Label uni
 ### 8. QA side by side, then record it
 Screenshot every route at 1440px and 375px, then
 `pick.py sheet --log <slug> --add <shot-1440.png> <shot-375.png>` and open the sheet with Read. Fix gaps until the build
-holds up next to the references, then tick the checklist:
+holds up next to the references. Also compare against the leader screenshots: a user of the leader should find every
+primary action where they expect it. Then tick the checklist:
+- [ ] **Leader layout:** routes, nav and primary action placed as in the category leader; nothing invented for its own sake.
 - [ ] **Polaris-grade:** grid, type scale, density, contrast and finish match the takes; nothing looks like a default template.
 - [ ] **Live data only:** every number, address and txid is real or labelled Empty / Loading / Setup required; units labelled.
 - [ ] **375px:** no horizontal overflow on any route (`document.documentElement.scrollWidth <= innerWidth`), no clipped text, nav usable.

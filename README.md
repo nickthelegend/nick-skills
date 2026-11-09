@@ -9,7 +9,7 @@ hackathon entries judged, polished and filmed in one day, with the human approvi
  /orchestrate        does it all: intake -> ideas -> judge -> build -> look -> live proof -> film -> submit
    /grok-ideation      Grok Expert (grok.com in your Chrome) generates; Claude kills, sharpens, re-judges: 5 rounds
    /idea-judge         honest self-judging against the event's real rubric, for ideas and finished builds
-   /dribbble-frontend  UI built from randomly picked, studied Dribbble references; QA at 375 px and 1440 px
+   /dribbble-frontend  UI: layout from the real category leader, finish from studied Dribbble references; QA at 375 px and 1440 px
    /chatgpt-assets     brand art from ChatGPT images (chatgpt.com in your Chrome), downloaded as blobs
    /gemini-video       hero loops and film openers from Veo (gemini.google.com in your Chrome)
    /judge-skill        judge, polish and film a batch of products in rounds the human approves
@@ -20,7 +20,7 @@ hackathon entries judged, polished and filmed in one day, with the human approvi
 | [orchestrate](skills/orchestrate/SKILL.md) | One command for a whole entry, on autopilot. [orch.py](skills/orchestrate/scripts/orch.py) holds the task graph for every phase and renders `STATE.md`. A Stop hook ([install-hooks.sh](skills/orchestrate/scripts/install-hooks.sh)) blocks the session from ending its turn while any task is runnable. Codex workers ([codex-run.sh](skills/orchestrate/scripts/codex-run.sh)) run under `run_in_background`, so their exit wakes the session for review. It pauses only for steps the human must do: money, going public, submitting. |
 | [grok-ideation](skills/grok-ideation/SKILL.md) | Ideas in five rounds: fan-out across lenses, kill pass, sharpen, re-judge, pick. Grok never gives the final score. |
 | [idea-judge](skills/idea-judge/SKILL.md) | Five-round honest judge: rubric and gates, prior-art kill check, evidence per criterion, improve the weakest, re-judge. |
-| [dribbble-frontend](skills/dribbble-frontend/SKILL.md) | Seeded random picks from your own private reference library (`DRIBBBLE_LIB`), notes on what to take, distinct look per product. Library images are never shipped. |
+| [dribbble-frontend](skills/dribbble-frontend/SKILL.md) | Layout from the real category leader's screens (Kickstarter, Ribbon, OpenRouter, Hyperliquid…), finish from seeded random picks in your own private reference library (`DRIBBBLE_LIB`); never invented layouts or clones across products. Library images are never shipped. |
 | [chatgpt-assets](skills/chatgpt-assets/SKILL.md) | Art direction, the asset set, blob download, contact-sheet check, web sizes. |
 | [gemini-video](skills/gemini-video/SKILL.md) | One careful Veo clip per day, blob download, web encode, keep the Gemini mark. |
 | [judge-skill](skills/judge-skill/SKILL.md) | Rounds 0–3 for a batch: non-UI fixes, UI gallery, raw walkthrough, the cut. |
