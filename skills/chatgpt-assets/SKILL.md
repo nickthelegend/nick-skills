@@ -82,3 +82,13 @@ in layout and motion, not new art. If they ask for changes, change only what the
 ## Headless alternative
 The Codex CLI's image tool on a ChatGPT plan can generate without a browser. See `/judge-skill`'s
 `scripts/assets-codex.sh`. Use it when the Chrome bridge is down.
+
+## Chrome 3D object style (Nick, Nov 2026)
+Nick's favourite product-art style, from xoox.fun: **polished chrome or brushed-silver 3D objects**, soft studio light,
+crisp reflections, a white or transparent background, one simple object per image (a coin, a stack of cards, a coin
+stack on a ring tray), and a tiny friendly face of two soft rounded marks. Use it for launchpads, memecoin and creator
+products, especially on a **dark UI**: generate on a transparent background so the silver pops on near-black.
+- Prompt line: "Polished chrome / brushed silver 3D render, soft studio lighting, crisp reflections, rounded bevelled
+  edges, centred single object, transparent background (no background, no ground shadow), square 1024×1024, no text."
+- Make the subject the product's own metaphor (for a comics launchpad: a chrome comic book, a speech-bubble coin, an ink
+  pen nib, stacked panels), and give each product its **own** face or mark. Never reuse xoox's mascot face or logo.

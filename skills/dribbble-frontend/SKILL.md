@@ -53,7 +53,7 @@ Example leaders:
 | AI capacity or model market | OpenRouter, Vast.ai, RunPod |
 | trading or dark pool | Hyperliquid, Binance, Drift, Renegade |
 | prediction market | Polymarket, tab.markets |
-| launchpad | pump.fun |
+| launchpad / memecoin / creator coins | pump.fun; **xoox.fun** (Nick's favourite: clean layout plus chrome 3D art; build a dark variant) |
 | social or chat fund | Telegram-style crew room |
 | payments | Stripe Checkout |
 
