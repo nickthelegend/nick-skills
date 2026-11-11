@@ -11,6 +11,7 @@ hackathon entries judged, polished and filmed in one day, with the human approvi
    /idea-judge         honest self-judging against the event's real rubric, for ideas and finished builds
    /dribbble-frontend  UI: layout from the real category leader, finish from studied Dribbble references; QA at 375 px and 1440 px
    /chatgpt-assets     brand art from ChatGPT images (chatgpt.com in your Chrome), downloaded as blobs
+   /3d-illustrations   premium 3D object sets (one glossy object, tiny face) in each product's own colours
    /gemini-video       hero loops and film openers from Veo (gemini.google.com in your Chrome)
    /judge-skill        judge, polish and film a batch of products in rounds the human approves
 ```
@@ -21,6 +22,7 @@ hackathon entries judged, polished and filmed in one day, with the human approvi
 | [grok-ideation](skills/grok-ideation/SKILL.md) | Ideas in five rounds: fan-out across lenses, kill pass, sharpen, re-judge, pick. Grok never gives the final score. |
 | [idea-judge](skills/idea-judge/SKILL.md) | Five-round honest judge: rubric and gates, prior-art kill check, evidence per criterion, improve the weakest, re-judge. |
 | [dribbble-frontend](skills/dribbble-frontend/SKILL.md) | Layout from the real category leader's screens (Kickstarter, Ribbon, OpenRouter, Hyperliquid…), finish from seeded random picks in your own private reference library (`DRIBBBLE_LIB`); never invented layouts or clones across products. Library images are never shipped. |
+| [3d-illustrations](skills/3d-illustrations/SKILL.md) | A consistent set of premium 3D object illustrations (one glossy object, soft studio light, a tiny friendly face; the object style comes from xoox.fun) in each product's own material and colours, generated with ChatGPT in your Chrome and wired into the UI with gentle motion. |
 | [chatgpt-assets](skills/chatgpt-assets/SKILL.md) | Art direction, the asset set, blob download, contact-sheet check, web sizes. |
 | [gemini-video](skills/gemini-video/SKILL.md) | One careful Veo clip per day, blob download, web encode, keep the Gemini mark. |
 | [judge-skill](skills/judge-skill/SKILL.md) | Rounds 0–3 for a batch: non-UI fixes, UI gallery, raw walkthrough, the cut. |

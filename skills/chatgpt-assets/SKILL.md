@@ -83,7 +83,10 @@ in layout and motion, not new art. If they ask for changes, change only what the
 The Codex CLI's image tool on a ChatGPT plan can generate without a browser. See `/judge-skill`'s
 `scripts/assets-codex.sh`. Use it when the Chrome bridge is down.
 
-## Chrome 3D object style (Nick, Nov 2026)
+## 3D object style (Nick, Nov 2026): see the `/3d-illustrations` skill
+The full workflow lives in `skills/3d-illustrations/SKILL.md`. Each product gets its OWN colours and material (silver only on request); the notes below are the original chrome reference.
+
+### Original chrome reference
 Nick's favourite product-art style, from xoox.fun: **polished chrome or brushed-silver 3D objects**, soft studio light,
 crisp reflections, a white or transparent background, one simple object per image (a coin, a stack of cards, a coin
 stack on a ring tray), and a tiny friendly face of two soft rounded marks. Use it for launchpads, memecoin and creator
